@@ -10,26 +10,11 @@ namespace EveryFan.Recruitment.PayoutCalculators
     /// should get their stake back. Any tied positions should have the sum of the amount due to those positions
     /// split equally among them.
     /// </summary>
-    public class FiftyFiftyPayoutCalculator : IPayoutCalculator
+    public class FiftyFiftyPayoutCalculator : PayoutCalculator
     {
-        private IReadOnlyList<PayingPosition> GetPayingPositions(Tournament tournament)
+        protected override IReadOnlyList<PayingPosition> GetPayingPositions(Tournament tournament)
         {
             throw new NotImplementedException();
-        }
-
-        public IReadOnlyList<TournamentPayout> Calculate(Tournament tournament)
-        {
-            IReadOnlyList<PayingPosition> payingPositions = this.GetPayingPositions(tournament);
-            IReadOnlyList<TournamentEntry> orderedEntries = tournament.Entries.OrderByDescending(p => p.Chips).ToList();
-
-            List<TournamentPayout> payouts = new List<TournamentPayout>();
-            payouts.AddRange(payingPositions.Select((p, i) => new TournamentPayout()
-            {
-                Payout = p.Payout,
-                UserId = orderedEntries[i].UserId
-            }));
-
-            return payouts;
         }
     }
 }
