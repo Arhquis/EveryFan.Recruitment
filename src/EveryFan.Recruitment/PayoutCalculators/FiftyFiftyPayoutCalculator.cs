@@ -41,14 +41,24 @@ namespace EveryFan.Recruitment.PayoutCalculators
             #endregion
 
             int payoutPerUser = prizePool / nrOfWinners;
+            int reminder = prizePool % nrOfWinners;
 
             for (int i = 0; i < nrOfWinners; i++)
             {
-                rvPayingPositions.Add(new PayingPosition
+                var position = new PayingPosition
                 {
                     Position = i,
                     Payout = payoutPerUser
-                });
+                };
+
+                if (reminder > 0)
+                {
+                    position.Payout++;
+
+                    reminder--;
+                }
+
+                rvPayingPositions.Add(position);
             }
 
             #region middle man
