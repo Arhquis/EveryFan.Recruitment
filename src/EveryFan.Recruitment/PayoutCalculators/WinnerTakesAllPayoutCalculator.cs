@@ -17,14 +17,24 @@ namespace EveryFan.Recruitment.PayoutCalculators
             int nrOfWinners = tournament.Entries.Count(e => e.Chips == tournament.Entries.Max(em => em.Chips));
 
             int payoutPerUser = tournament.PrizePool / nrOfWinners;
+            int reminder = tournament.PrizePool % nrOfWinners;
 
             for (int i = 0; i < nrOfWinners; i++)
             {
-                rvPayingPositions.Add(new PayingPosition
+                var position = new PayingPosition
                 {
                     Payout = payoutPerUser,
                     Position = i
-                });
+                };
+
+                if (reminder > 0)
+                {
+                    position.Payout++;
+
+                    reminder--;
+                }
+
+                rvPayingPositions.Add(position);
             }
 
             return rvPayingPositions;
