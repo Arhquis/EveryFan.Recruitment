@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Factory\CalculatorFactory.cs" />
+    <Compile Include="Factory\ICalculatorFactory.cs" />
     <Compile Include="PayingPosition.cs" />
     <Compile Include="PayoutCalculators\PayoutCalculator.cs" />
     <Compile Include="PayoutEngine.cs" />

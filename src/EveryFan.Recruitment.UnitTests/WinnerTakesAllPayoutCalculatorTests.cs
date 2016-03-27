@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using EveryFan.Recruitment.Factory;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EveryFan.Recruitment.UnitTests
 {
-    
     public class WinnerTakesAllPayoutCalculatorTests
     {
+        private ICalculatorFactory _calculatorFactory = new CalculatorFactory();
+
         [Test]
         public void TwoEntries()
         {
@@ -30,7 +32,7 @@ namespace EveryFan.Recruitment.UnitTests
                 }
             };
 
-            PayoutEngine calculator = new PayoutEngine();
+            PayoutEngine calculator = new PayoutEngine(_calculatorFactory);
             IReadOnlyList<TournamentPayout> payouts = calculator.Calculate(tournament);
 
             Assert.AreEqual(1, payouts.Count);
@@ -65,7 +67,7 @@ namespace EveryFan.Recruitment.UnitTests
                 }
             };
 
-            PayoutEngine calculator = new PayoutEngine();
+            PayoutEngine calculator = new PayoutEngine(_calculatorFactory);
             IReadOnlyList<TournamentPayout> payouts = calculator.Calculate(tournament);
 
             Assert.AreEqual(1, payouts.Count);
@@ -101,7 +103,7 @@ namespace EveryFan.Recruitment.UnitTests
                 }
             };
 
-            PayoutEngine calculator = new PayoutEngine();
+            PayoutEngine calculator = new PayoutEngine(_calculatorFactory);
             IReadOnlyList<TournamentPayout> payouts = calculator.Calculate(tournament);
 
             Assert.AreEqual(2, payouts.Count);
