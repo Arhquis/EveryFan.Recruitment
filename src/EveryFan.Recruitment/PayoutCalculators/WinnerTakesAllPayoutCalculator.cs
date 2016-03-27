@@ -12,7 +12,15 @@ namespace EveryFan.Recruitment.PayoutCalculators
     {
         protected override IReadOnlyList<PayingPosition> GetPayingPositions(Tournament tournament)
         {
-            throw new NotImplementedException();
+            List<PayingPosition> rvPayingPositions = new List<PayingPosition>();
+
+            rvPayingPositions.Add(new PayingPosition
+            {
+                Payout = tournament.PrizePool,
+                Position = 0
+            });
+
+            return rvPayingPositions;
         }
     }
 }

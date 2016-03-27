@@ -14,7 +14,37 @@ namespace EveryFan.Recruitment.PayoutCalculators
     {
         protected override IReadOnlyList<PayingPosition> GetPayingPositions(Tournament tournament)
         {
-            throw new NotImplementedException();
+            List<PayingPosition> rvPayingPositions = new List<PayingPosition>();
+
+            int prizePool = tournament.PrizePool;
+
+            if (tournament.Entries.Count % 2 != 0)
+            {
+                prizePool -= tournament.BuyIn;
+            }
+
+            int payoutPerUser = prizePool / (tournament.Entries.Count / 2);
+
+            for (int i = 0; i < tournament.Entries.Count / 2; i++)
+            {
+                rvPayingPositions.Add(new PayingPosition
+                {
+                    Position = i,
+                    Payout = payoutPerUser
+                });
+            }
+
+            if (tournament.PrizePool != prizePool)
+            {
+                // There was a middle man.
+                rvPayingPositions.Add(new PayingPosition
+                {
+                    Position = rvPayingPositions.Last().Position + 1,
+                    Payout = tournament.BuyIn
+                });
+            }
+
+            return rvPayingPositions;
         }
     }
 }
