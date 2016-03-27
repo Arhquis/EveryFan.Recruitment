@@ -149,5 +149,43 @@ namespace EveryFan.Recruitment.UnitTests
             Assert.That(payouts[0].Payout == 500 || payouts[0].Payout == 499);
             Assert.That(payouts[1].Payout == 500 || payouts[1].Payout == 499);
         }
+
+        [Test]
+        public void EverybodyWins()
+        {
+            Tournament tournament = new Tournament()
+            {
+                BuyIn = 333,
+                PrizePool = 999,
+                PayoutScheme = PayoutScheme.FIFTY_FIFY,
+                Entries = new List<TournamentEntry>()
+                {
+                    new TournamentEntry()
+                    {
+                        Chips = 5000,
+                        UserId = "roger"
+                    },
+                    new TournamentEntry()
+                    {
+                        Chips = 5000,
+                        UserId = "jennifer"
+                    },
+                    new TournamentEntry()
+                    {
+                        Chips = 5000,
+                        UserId = "billy"
+                    },
+                }
+            };
+
+            PayoutEngine calculator = new PayoutEngine(_calculatorFactory);
+            IReadOnlyList<TournamentPayout> payouts = calculator.Calculate(tournament);
+
+            Assert.AreEqual(3, payouts.Count);
+            Assert.AreEqual(999, payouts.Sum(p => p.Payout));
+            Assert.That(payouts[0].Payout == 333);
+            Assert.That(payouts[1].Payout == 333);
+            Assert.That(payouts[2].Payout == 333);
+        }
     }
 }

@@ -16,29 +16,10 @@ namespace EveryFan.Recruitment.PayoutCalculators
         {
             List<PayingPosition> rvPayingPositions = new List<PayingPosition>();
 
-            var groupEntries = tournament.Entries.GroupBy(e => e.Chips).Select(g => new
-            {
-                Count = g.Count()
-            }).ToList();
+            List<int> groupEntries = tournament.Entries.GroupBy(e => e.Chips).Select(g => g.Count()).ToList();
 
-            #region prizepool calculation
-            int prizePool = tournament.PrizePool;
-
-            // The number of competitors are odd.
-            if (groupEntries.Count() % 2 != 0)
-            {
-                prizePool -= (tournament.BuyIn * groupEntries[groupEntries.Count / 2].Count);
-            }
-            #endregion
-
-            #region number of winners calculation
-            int nrOfWinners = 0;
-
-            for (int i = 0; i < groupEntries.Count / 2; i++)
-            {
-                nrOfWinners += groupEntries[i].Count;
-            }
-            #endregion
+            int prizePool = CalculatePrizePool(tournament.PrizePool, tournament.BuyIn, groupEntries);
+            int nrOfWinners = CalculateNumberOfWinners(groupEntries);
 
             int payoutPerUser = prizePool / nrOfWinners;
             int reminder = prizePool % nrOfWinners;
@@ -61,11 +42,10 @@ namespace EveryFan.Recruitment.PayoutCalculators
                 rvPayingPositions.Add(position);
             }
 
-            #region middle man
             // Check if there is a middle man.
             if (tournament.PrizePool != prizePool)
             {
-                for (int i = 0; i < groupEntries[groupEntries.Count / 2].Count; i++)
+                for (int i = 0; i < groupEntries[groupEntries.Count / 2]; i++)
                 {
                     rvPayingPositions.Add(new PayingPosition
                     {
@@ -74,9 +54,38 @@ namespace EveryFan.Recruitment.PayoutCalculators
                     });
                 }
             }
-            #endregion
 
             return rvPayingPositions;
+        }
+
+        private int CalculatePrizePool(int originalPrizePool, int buyIn, List<int> groupEntries)
+        {
+            int prizePool = originalPrizePool;
+
+            // The number of competitors are odd.
+            if (groupEntries.Count > 2 && groupEntries.Count % 2 != 0)
+            {
+                prizePool -= (buyIn * groupEntries[groupEntries.Count / 2]);
+            }
+
+            return prizePool;
+        }
+
+        private int CalculateNumberOfWinners(List<int> groupEntries)
+        {
+            if (groupEntries.Count == 1)
+            {
+                return groupEntries[0];
+            }
+
+            int nrOfWinners = 0;
+
+            for (int i = 0; i < groupEntries.Count / 2; i++)
+            {
+                nrOfWinners += groupEntries[i];
+            }
+
+            return nrOfWinners;
         }
     }
 }
