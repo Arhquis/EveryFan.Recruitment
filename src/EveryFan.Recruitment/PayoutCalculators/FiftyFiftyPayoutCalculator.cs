@@ -16,16 +16,33 @@ namespace EveryFan.Recruitment.PayoutCalculators
         {
             List<PayingPosition> rvPayingPositions = new List<PayingPosition>();
 
+            var groupEntries = tournament.Entries.GroupBy(e => e.Chips).Select(g => new
+            {
+                Count = g.Count()
+            }).ToList();
+
+            #region prizepool calculation
             int prizePool = tournament.PrizePool;
 
-            if (tournament.Entries.Count % 2 != 0)
+            // The number of competitors are odd.
+            if (groupEntries.Count() % 2 != 0)
             {
-                prizePool -= tournament.BuyIn;
+                prizePool -= (tournament.BuyIn * groupEntries[groupEntries.Count / 2].Count);
             }
+            #endregion
 
-            int payoutPerUser = prizePool / (tournament.Entries.Count / 2);
+            #region number of winners calculation
+            int nrOfWinners = 0;
 
-            for (int i = 0; i < tournament.Entries.Count / 2; i++)
+            for (int i = 0; i < groupEntries.Count / 2; i++)
+            {
+                nrOfWinners += groupEntries[i].Count;
+            }
+            #endregion
+
+            int payoutPerUser = prizePool / nrOfWinners;
+
+            for (int i = 0; i < nrOfWinners; i++)
             {
                 rvPayingPositions.Add(new PayingPosition
                 {
@@ -34,15 +51,20 @@ namespace EveryFan.Recruitment.PayoutCalculators
                 });
             }
 
+            #region middle man
+            // Check if there is a middle man.
             if (tournament.PrizePool != prizePool)
             {
-                // There was a middle man.
-                rvPayingPositions.Add(new PayingPosition
+                for (int i = 0; i < groupEntries[groupEntries.Count / 2].Count; i++)
                 {
-                    Position = rvPayingPositions.Last().Position + 1,
-                    Payout = tournament.BuyIn
-                });
+                    rvPayingPositions.Add(new PayingPosition
+                    {
+                        Position = rvPayingPositions.Last().Position + 1,
+                        Payout = tournament.BuyIn
+                    });
+                }
             }
+            #endregion
 
             return rvPayingPositions;
         }

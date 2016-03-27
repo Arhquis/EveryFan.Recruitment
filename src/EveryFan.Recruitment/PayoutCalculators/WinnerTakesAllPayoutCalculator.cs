@@ -14,11 +14,18 @@ namespace EveryFan.Recruitment.PayoutCalculators
         {
             List<PayingPosition> rvPayingPositions = new List<PayingPosition>();
 
-            rvPayingPositions.Add(new PayingPosition
+            int nrOfWinners = tournament.Entries.Count(e => e.Chips == tournament.Entries.Max(em => em.Chips));
+
+            int payoutPerUser = tournament.PrizePool / nrOfWinners;
+
+            for (int i = 0; i < nrOfWinners; i++)
             {
-                Payout = tournament.PrizePool,
-                Position = 0
-            });
+                rvPayingPositions.Add(new PayingPosition
+                {
+                    Payout = payoutPerUser,
+                    Position = i
+                });
+            }
 
             return rvPayingPositions;
         }
